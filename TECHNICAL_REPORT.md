@@ -247,7 +247,6 @@ Pipeline([
 - **One-Hot Encoding**: For nominal categories with few levels
 - **Label Encoding**: For ordinal categories
 
-
 #### 5.2.3 Target Variable
 
 - **Custom TargetEncoder**: Maps "Yes"/"No" → 1/0
@@ -256,6 +255,95 @@ Pipeline([
 
 ## 6. Model Performance and Evaluation
 
+### 6.1 Evaluation Methodology
+
+The model evaluation follows:
+
+1. **Training Set Evaluation**: Initial model performance assessment
+2. **Validation Set Evaluation**: Unbiased performance estimation during development
+
+### 6.2 Performance Metrics Overview
+
+The system employs comprehensive evaluation metrics aligned with business objectives:
+
+1. **Classification Accuracy**: Overall correctness across all predictions
+2. **F1-Score**: Harmonic mean of precision and recall
+3. **Precision**: True positive rate (accuracy of churn predictions)
+4. **Recall**: Sensitivity (detection rate of actual churners)
+5. **F-beta Score (β=0.5)**: Precision-weighted harmonic mean for business focus
+
+### 6.3 Training Set Performance Results
+
+#### 6.3.1 Core Metrics
+
+| Metric             | Value  | Business Interpretation                      |
+| ------------------ | ------ | -------------------------------------------- |
+| **Accuracy**       | 82.90% | Correctly classifies 83 out of 100 customers |
+| **Precision**      | 72.69% | 73% of predicted churners actually churn     |
+| **Recall**         | 55.91% | Identifies 56% of actual churners            |
+| **F1-Score**       | 63.20% | Balanced precision-recall performance        |
+| **F-beta (β=0.5)** | 68.57% | Precision-focused business metric            |
+
+#### 6.3.2 Detailed Classification Report
+
+```
+              precision    recall  f1-score   support
+
+          No       0.85      0.93      0.89      3635
+         Yes       0.73      0.56      0.63      1295
+
+    accuracy                           0.83      4930
+   macro avg       0.79      0.74      0.76      4930
+weighted avg       0.82      0.83      0.82      4930
+```
+
+**Key Insights:**
+
+- **Non-churners (No)**: High precision (85%) and excellent recall (93%)
+- **Churners (Yes)**: Good precision (73%) but moderate recall (56%)
+- **Weighted average**: Reflects the class imbalance in the dataset
+
+#### 6.3.3 Confusion Matrix Analysis
+
+```
+Predicted:     No    Yes
+Actual: No   3363   272   (Total: 3635)
+        Yes   571   724   (Total: 1295)
+```
+
+**Confusion Matrix Breakdown:**
+
+- **True Negatives (TN)**: 3,363 correctly identified non-churners
+- **False Positives (FP)**: 272 incorrectly predicted as churners
+- **False Negatives (FN)**: 571 missed churners (critical business cost)
+- **True Positives (TP)**: 724 correctly identified churners
+
+**Business Impact of Errors:**
+
+- **False Positives (272)**: $16,592 in unnecessary retention spending\*
+- **False Negatives (571)**: $42,520 in lost monthly revenue potential\*
+
+\*Based on average customer values from EDA analysis
+
+### 6.4 Validation Set Performance Results
+
+#### 6.4.1 Core Validation Metrics
+
+| Metric             | Training | Validation | Difference |
+| ------------------ | -------- | ---------- | ---------- |
+| **Accuracy**       | 82.90%   | 81.06%     | -1.84%     |
+| **Precision**      | 72.69%   | 68.57%     | -4.12%     |
+| **Recall**         | 55.91%   | 51.80%     | -4.11%     |
+| **F1-Score**       | 63.20%   | 59.02%     | -4.18%     |
+| **F-beta (β=0.5)** | 68.57%   | 64.40%     | -4.17%     |
+
+#### 6.4.2 Validation Confusion Matrix
+
+```
+Predicted:     No    Yes
+Actual: No    712    66   (Total: 778)
+        Yes   134   144   (Total: 278)
+```
 ### 6.1 Evaluation Metrics
 
 The system employs comprehensive evaluation metrics:
@@ -264,7 +352,7 @@ The system employs comprehensive evaluation metrics:
 2. **F1-Score**: Harmonic mean of precision and recall
 3. **Precision**: True positive rate (churn prediction accuracy)
 4. **Recall**: Sensitivity (actual churner detection rate)
-6. **F-beta Score (β=0.5)**: Precision-weighted harmonic mean
+5. **F-beta Score (β=0.5)**: Precision-weighted harmonic mean
 
 ### 6.2 Business Impact Analysis
 
