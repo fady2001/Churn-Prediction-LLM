@@ -21,6 +21,15 @@ MODELS_DIR = PROJ_ROOT / "models"
 REPORTS_DIR = PROJ_ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
 
+DATASET_NAME = "telco_customer_churn.csv"
+
+SAVE_INTERIM = False
+SAVE_PROCESSED = False
+SAVE_METRICS_REPORT = True
+
+LLM_MODEL = "gemma3:1b"
+
+
 PIPELINE_CONFIG = {
     "drop": ["customerID", "gender"],
     "scaling": {"standard": ["tenure", "Monthly_Charges", "Total_Charges"]},
@@ -39,7 +48,12 @@ PIPELINE_CONFIG = {
             "Streaming_Movies",
             "Paperless_Billing",
         ],
-        "ordinal": ["Contract", "Payment_Method", "Payment_Method_Grouped", "tenure_group"],
+        "ordinal": [
+            "Contract",
+            "Payment_Method",
+            "Payment_Method_Grouped",
+            "tenure_group",
+        ],
     },
 }
 
