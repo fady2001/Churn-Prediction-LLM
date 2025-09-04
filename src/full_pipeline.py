@@ -2,17 +2,15 @@ import pickle
 
 from loguru import logger
 import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     accuracy_score,
     classification_report,
     confusion_matrix,
     f1_score,
     fbeta_score,
-    precision_recall_curve,
     precision_score,
     recall_score,
-    roc_auc_score,
-    roc_curve,
 )
 from sklearn.pipeline import Pipeline
 
@@ -68,15 +66,18 @@ def full_pipeline():
     logger.info(f"Features after preprocessing shape: {X_preprocessed.shape}")
 
     # 6. training
-    from sklearn.ensemble import RandomForestClassifier
-
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    params = {
+        "max_depth": 7,
+        "min_samples_leaf": 1,
+        "min_samples_split": 5,
+        "n_estimators": 500,
+    }
+    model = RandomForestClassifier(**params, random_state=42)
     model.fit(X_preprocessed, y_encoded)
     logger.info("Model training completed.")
 
     # 7. generate evaluation metrics
     y_pred_encoded = model.predict(X_preprocessed)
-    y_pred_proba = model.predict_proba(X_preprocessed)[:, 1]
 
     # Decode predictions back to original labels for interpretability
     y_pred = target_encoder.inverse_transform(y_pred_encoded)
@@ -86,12 +87,9 @@ def full_pipeline():
     f1 = f1_score(y_encoded, y_pred_encoded)
     precision = precision_score(y_encoded, y_pred_encoded)
     recall = recall_score(y_encoded, y_pred_encoded)
-    roc_auc = roc_auc_score(y_encoded, y_pred_proba)
     fbeta = fbeta_score(y_encoded, y_pred_encoded, beta=0.5)
     report = classification_report(y_original, y_pred)
     conf_matrix = confusion_matrix(y_encoded, y_pred_encoded)
-    precision_vals, recall_vals, _ = precision_recall_curve(y_encoded, y_pred_proba)
-    fpr, tpr, _ = roc_curve(y_encoded, y_pred_proba)
 
     if SAVE_METRICS_REPORT:
         metrics_path = REPORTS_DIR / "metrics_report.txt"
@@ -101,7 +99,6 @@ def full_pipeline():
             f.write(f"F1 Score: {f1}\n")
             f.write(f"Precision: {precision}\n")
             f.write(f"Recall: {recall}\n")
-            f.write(f"ROC AUC: {roc_auc}\n")
             f.write(f"F-beta Score (beta=0.5): {fbeta}\n")
             f.write("\nClassification Report (Original Labels):\n")
             f.write(report)
@@ -131,7 +128,6 @@ def full_pipeline():
     y_val_encoded = target_encoder.transform(y_val)
 
     y_val_pred_encoded = full_pipeline.predict(X_val)
-    y_val_pred_proba = full_pipeline.predict_proba(X_val)[:, 1]
 
     # Decode predictions for interpretability
     y_val_pred = target_encoder.inverse_transform(y_val_pred_encoded)
@@ -145,8 +141,6 @@ def full_pipeline():
     logger.info(f"Validation Precision: {val_precision}")
     val_recall = recall_score(y_val_encoded, y_val_pred_encoded)
     logger.info(f"Validation Recall: {val_recall}")
-    val_roc_auc = roc_auc_score(y_val_encoded, y_val_pred_proba)
-    logger.info(f"Validation ROC AUC: {val_roc_auc}")
     val_fbeta = fbeta_score(y_val_encoded, y_val_pred_encoded, beta=0.5)
     logger.info(f"Validation F-beta Score (beta=0.5): {val_fbeta}")
     val_report = classification_report(y_val_original, y_val_pred)
@@ -162,7 +156,6 @@ def full_pipeline():
             f.write(f"Validation F1 Score: {val_f1}\n")
             f.write(f"Validation Precision: {val_precision}\n")
             f.write(f"Validation Recall: {val_recall}\n")
-            f.write(f"Validation ROC AUC: {val_roc_auc}\n")
             f.write(f"Validation F-beta Score (beta=0.5): {val_fbeta}\n")
             f.write("\nValidation Classification Report (Original Labels):\n")
             f.write(val_report)

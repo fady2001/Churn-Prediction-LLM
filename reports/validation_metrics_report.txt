@@ -1,21 +1,20 @@
 Target Encoding Mapping: {'No': np.int64(0), 'Yes': np.int64(1)}
 Validation Accuracy: 0.8106060606060606
-Validation F1 Score: 0.5867768595041323
-Validation Precision: 0.6893203883495146
-Validation Recall: 0.5107913669064749
-Validation ROC AUC: 0.8627660853322483
-Validation F-beta Score (beta=0.5): 0.6442831215970962
+Validation F1 Score: 0.5901639344262295
+Validation Precision: 0.6857142857142857
+Validation Recall: 0.5179856115107914
+Validation F-beta Score (beta=0.5): 0.6440071556350626
 
 Validation Classification Report (Original Labels):
               precision    recall  f1-score   support
 
           No       0.84      0.92      0.88       778
-         Yes       0.69      0.51      0.59       278
+         Yes       0.69      0.52      0.59       278
 
     accuracy                           0.81      1056
-   macro avg       0.76      0.71      0.73      1056
+   macro avg       0.76      0.72      0.73      1056
 weighted avg       0.80      0.81      0.80      1056
 
 Validation Confusion Matrix (Encoded Labels):
-[[714  64]
- [136 142]]
+[[712  66]
+ [134 144]]

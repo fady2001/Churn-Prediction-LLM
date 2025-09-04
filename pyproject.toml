@@ -28,6 +28,7 @@ dependencies = [
     "ruff",
     "scikit-learn>=1.7.1",
     "seaborn>=0.13.2",
+    "streamlit>=1.49.1",
     "tqdm",
     "typer",
     "xgboost>=3.0.4",

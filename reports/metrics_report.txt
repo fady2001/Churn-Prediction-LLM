@@ -1,10 +1,9 @@
 Target Encoding Mapping: {'No': np.int64(0), 'Yes': np.int64(1)}
-Accuracy: 0.8283975659229209
-F1 Score: 0.6295971978984238
-Precision: 0.7269969666329625
-Recall: 0.5552123552123552
-ROC AUC: 0.896102669775297
-F-beta Score (beta=0.5): 0.6846314987621406
+Accuracy: 0.8290060851926978
+F1 Score: 0.6320384111741597
+Precision: 0.7269076305220884
+Recall: 0.5590733590733591
+F-beta Score (beta=0.5): 0.6857359348361433
 
 Classification Report (Original Labels):
               precision    recall  f1-score   support
@@ -17,5 +16,5 @@ Classification Report (Original Labels):
 weighted avg       0.82      0.83      0.82      4930
 
 Confusion Matrix (Encoded Labels):
-[[3365  270]
- [ 576  719]]
+[[3363  272]
+ [ 571  724]]
