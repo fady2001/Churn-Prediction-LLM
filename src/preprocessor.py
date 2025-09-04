@@ -1,8 +1,9 @@
 from typing import Dict, List, Tuple
 
 from loguru import logger
+import numpy as np
 import pandas as pd
-from sklearn.base import BaseEstimator
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import (
@@ -14,22 +15,39 @@ from sklearn.preprocessing import (
 )
 
 
-class Preprocessor:
+class Preprocessor(BaseEstimator, TransformerMixin):
+    """
+    Comprehensive preprocessing transformer for data preprocessing
+
+    This transformer handles dropping columns, encoding, scaling, and imputation
+    and can be easily integrated into scikit-learn pipelines.
+    """
+
     def __init__(
         self,
         pipeline_config: Dict[str, str] = None,
     ):
         self.pipeline_config = pipeline_config or {}
         self.pipeline = None
+        self.feature_names_out_ = None
 
-    def fit(self, X: pd.DataFrame) -> "Preprocessor":
+    def fit(self, X: pd.DataFrame, y=None) -> "Preprocessor":
+        """
+        Fit the preprocessor to the data.
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame
+            Input features
+        y : array-like, optional
+            Target values (ignored)
+
+        Returns:
+        --------
+        self : Preprocessor
+        """
         transformers = []
 
-        # if self.pipeline_config.get("drop"):
-        #     columns_to_drop = self.pipeline_config["drop"]
-        #     transformers.append(('drop', 'drop', columns_to_drop))
-
-        # X.drop(columns=self.pipeline_config.get("drop", []), inplace=True, errors="ignore")
         logger.info(f"Columns to drop: {self.pipeline_config.get('drop', [])}")
         transformers.append(("drop_columns", "drop", self.pipeline_config.get("drop", [])))
         transformers.extend(self.__create_encode_steps())
@@ -39,34 +57,69 @@ class Preprocessor:
         preprocessor = ColumnTransformer(transformers=transformers, remainder="passthrough")
 
         self.pipeline = preprocessor.fit(X)
+
+        # Set the feature names after fitting
+        self.feature_names_out_ = self.get_feature_names_from_preprocessor()
+
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        """
+        Transform the input features using the fitted preprocessor.
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame
+            Input features
+
+        Returns:
+        --------
+        X_transformed : pandas.DataFrame
+            Transformed features
+        """
         if self.pipeline is None:
-            raise ValueError("Pipeline not fitted. Call fit() before transform().")
+            raise ValueError("Preprocessor not fitted. Call fit() before transform().")
 
         # Transform the data
         transformed_data = self.pipeline.transform(X)
 
-        # Get feature names and create DataFrame
-        feature_names = self.get_feature_names_from_preprocessor()
+        return pd.DataFrame(transformed_data, columns=self.feature_names_out_, index=X.index)
 
-        return pd.DataFrame(transformed_data, columns=feature_names, index=X.index)
+    def fit_transform(self, X: pd.DataFrame, y=None) -> pd.DataFrame:
+        """
+        Fit the preprocessor and transform the data in one step.
 
-    def fit_transform(self, X: pd.DataFrame) -> pd.DataFrame:
-        self.fit(X)
-        # Transform the data
-        transformed_data = self.pipeline.fit_transform(X)
+        Parameters:
+        -----------
+        X : pandas.DataFrame
+            Input features
+        y : array-like, optional
+            Target values (ignored)
 
-        # Get feature names and create DataFrame
-        feature_names = self.get_feature_names_from_preprocessor()
+        Returns:
+        --------
+        X_transformed : pandas.DataFrame
+            Transformed features
+        """
+        return self.fit(X, y).transform(X)
 
-        return pd.DataFrame(transformed_data, columns=feature_names, index=X.index)
+    def get_feature_names_out(self, input_features=None):
+        """
+        Get output feature names for transformation.
 
-    def get_pipeline(self) -> ColumnTransformer:
-        if self.pipeline is None:
-            raise ValueError("Pipeline not fitted. Call fit() before get_pipeline().")
-        return self.pipeline
+        Parameters:
+        -----------
+        input_features : array-like of str or None, default=None
+            Input feature names
+
+        Returns:
+        --------
+        feature_names_out : ndarray of str objects
+            Transformed feature names
+        """
+        if self.feature_names_out_ is None:
+            raise ValueError("This Preprocessor instance is not fitted yet.")
+        return np.array(self.feature_names_out_)
 
     def __create_encode_steps(self) -> List[Tuple[str, BaseEstimator, List[str]]]:
         encode_steps = []
@@ -199,4 +252,6 @@ if __name__ == "__main__":
     }
     preprocessor = Preprocessor(pipeline_config=PIPELINE_CONFIG)
     processed_data = preprocessor.fit_transform(df)
-    print(processed_data.columns)
+    print(processed_data.columns.tolist())
+    processed_data.to_csv("test_preprocessor_output.csv", index=False)
+    print(preprocessor)
