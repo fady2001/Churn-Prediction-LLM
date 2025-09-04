@@ -21,6 +21,28 @@ MODELS_DIR = PROJ_ROOT / "models"
 REPORTS_DIR = PROJ_ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
 
+PIPELINE_CONFIG = {
+    "drop": ["customerID", "gender"],
+    "scaling": {"standard": ["tenure", "Monthly_Charges", "Total_Charges"]},
+    "encoding": {
+        "onehot": [
+            "Is_Married",
+            "Dependents",
+            "Phone_Service",
+            "Dual",
+            "Internet_Service",
+            "Online_Security",
+            "Online_Backup",
+            "Device_Protection",
+            "Tech_Support",
+            "Streaming_TV",
+            "Streaming_Movies",
+            "Paperless_Billing",
+        ],
+        "ordinal": ["Contract", "Payment_Method", "Payment_Method_Grouped", "tenure_group"],
+    },
+}
+
 # If tqdm is installed, configure loguru with tqdm.write
 # https://github.com/Delgan/loguru/issues/135
 try:
