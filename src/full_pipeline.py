@@ -1,7 +1,7 @@
+import pickle
+
 from loguru import logger
 import pandas as pd
-
-# Evaluation metrics - including fbeta_score
 from sklearn.metrics import (
     accuracy_score,
     classification_report,
@@ -18,6 +18,7 @@ from sklearn.pipeline import Pipeline
 
 from src.config import (
     INTERIM_DATA_DIR,
+    MODELS_DIR,
     PIPELINE_CONFIG,
     RAW_DATA_DIR,
     REPORTS_DIR,
@@ -175,3 +176,9 @@ def full_pipeline():
 
 if __name__ == "__main__":
     pipeline, encoder = full_pipeline()
+    artifacts = {
+        "model_pipeline": pipeline,
+        "target_encoder": encoder,
+    }
+    with open(MODELS_DIR / "artifacts.pkl", "wb") as f:
+        pickle.dump(artifacts, f)

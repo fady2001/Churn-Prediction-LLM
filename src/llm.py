@@ -21,6 +21,9 @@ Your task is to read a customer description paragraph and extract customer featu
 - If demographic information is unclear, set those fields to null
 - If service details are ambiguous, set them to null
 
+## IMPORTANT INSTRUCTION FOR tenure:
+- Extract tenure as an integer number of months. If tenure is described in years, convert to months (e.g., 2 years = 24 months). If tenure is not mentioned, set to null.
+
 ## Features to extract:
 
 ### Customer Identification:
